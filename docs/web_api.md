@@ -35,7 +35,8 @@ Get API metadata and available endpoints.
   "version": "1.0.0",
   "endpoints": {
     "health": "GET /health",
-    "rca": "POST /get-rca"
+    "rca": "POST /get-rca",
+    "rule_docs": "GET /rule-docs/{rule_id}"
   },
   "docs": "/docs"
 }
@@ -43,7 +44,34 @@ Get API metadata and available endpoints.
 
 ---
 
-### 3. Root Cause Analysis (RCA)
+### 3. Rule Documentation Lookup
+**GET** `/rule-docs/{rule_id}`
+
+Fetch live AWS documentation for a specific WAF rule.
+
+**Path Parameter:**
+- `rule_id`: The WAF rule ID (e.g. `CrossSiteScripting_BODY`, `AWSManagedRulesCommonRuleGroup`)
+
+**Response:**
+```json
+{
+  "rule_id": "CrossSiteScripting_BODY",
+  "docs": "Relevant AWS documentation excerpt for the rule..."
+}
+```
+
+**Status Codes:**
+- `200 OK`: Documentation found and returned
+- `500 Internal Server Error`: Documentation lookup failed
+
+**Example with cURL:**
+```bash
+curl http://localhost:8000/rule-docs/CrossSiteScripting_BODY
+```
+
+---
+
+### 4. Root Cause Analysis (RCA)
 **POST** `/get-rca`
 
 Batch analyze AWS WAF logs and generate root cause analysis.

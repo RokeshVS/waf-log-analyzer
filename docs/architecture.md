@@ -9,13 +9,13 @@
 │                                                               │
 │  FastAPI Web Service (Port 8000)                            │
 │  ├─ POST /get-rca           → Batch RCA (CloudWatch logs)   │
-│  ├─ POST /analyze-log       → Single log analysis           │
+│  ├─ GET  /rule-docs/{id}    → Fetch AWS docs for a rule     │
 │  ├─ GET  /health            → Health check                  │
 │  └─ GET  /docs              → OpenAPI docs                  │
 │                              ↓                               │
 │  MCP Tools (app/mcp_server.py)                              │
 │  ├─ analyze_waf_log()                                       │
-│  ├─ explain_block_reason()                                  │
+│  ├─ lookup_waf_rule_docs()                                  │
 │  └─ check_ollama_health()                                   │
 │         ↓                          ↓                         │
 │  WAF Log Parser          Context Assembler                  │
@@ -77,4 +77,3 @@ Response with status/analyses/errors
 ---
 
 See [QUICKSTART](quick_start.md) for setup.
-
