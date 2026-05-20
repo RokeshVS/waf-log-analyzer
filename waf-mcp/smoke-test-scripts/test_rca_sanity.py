@@ -302,37 +302,77 @@ async def test_invalid_logs() -> bool:
         return False
 
 
+async def test_rule_docs() -> bool:
+    """Test the /rule-docs endpoint for a known rule ID."""
+    logger.info("=== Testing Rule Docs Endpoint ===")
+    rule_id = "AWSManagedRulesCommonRuleGroup"
+    try:
+        async with httpx.AsyncClient() as client:
+            logger.info("="*80)
+            logger.info("REQUEST (INPUT TO API)")
+            logger.info("="*80)
+            logger.info(f"GET {API_URL}/rule-docs/{rule_id}")
+            logger.info("="*80 + "\n")
+
+            response = await client.get(f"{API_URL}/rule-docs/{rule_id}", timeout=60.0)
+
+            logger.info("="*80)
+            logger.info("RESPONSE (OUTPUT FROM API)")
+            logger.info("="*80)
+            logger.info(f"Status: {response.status_code}")
+            data = response.json()
+            # Truncate docs for readability
+            display = dict(data)
+            if "docs" in display and len(display["docs"]) > 300:
+                display["docs"] = display["docs"][:300] + "…"
+            logger.info(f"Response Body:\n{json.dumps(display, indent=2)}")
+            logger.info("="*80 + "\n")
+
+            if response.status_code == 200 and data.get("rule_id") == rule_id:
+                logger.info("✓ Rule docs test passed\n")
+                return True
+            else:
+                logger.error("✗ Rule docs test failed\n")
+                return False
+    except Exception as e:
+        logger.error(f"✗ Rule docs error: {e}\n")
+        return False
+
+
 async def main():
     """Run all tests."""
     logger.info("\n" + "="*60)
     logger.info("WAF Log Analysis API - Sanity Test")
     logger.info("="*60 + "\n")
-    
+
     results = {}
-    
+
     # Test health endpoint
     results["health"] = await test_health()
-    
+
+    # Test rule docs lookup
+    results["rule_docs"] = await test_rule_docs()
+
     # Test batch RCA processing with multiple valid logs
     results["batch_rca"] = await test_batch_rca()
-    
+
     # Test error handling
     results["error_handling"] = await test_invalid_logs()
-    
+
     # Summary
     logger.info("="*60)
     logger.info("Test Summary")
     logger.info("="*60)
     passed = sum(1 for v in results.values() if v)
     total = len(results)
-    
+
     for test_name, result in results.items():
         status = "✓ PASS" if result else "✗ FAIL"
         logger.info(f"{test_name:30s} {status}")
-    
+
     logger.info("="*60)
     logger.info(f"Overall: {passed}/{total} tests passed\n")
-    
+
     return all(results.values())
 
 

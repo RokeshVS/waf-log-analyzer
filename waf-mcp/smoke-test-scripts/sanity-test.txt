@@ -1,0 +1,306 @@
+2026-05-20 18:18:48,096 [INFO] 
+============================================================
+2026-05-20 18:18:48,096 [INFO] WAF Log Analysis API - Sanity Test
+2026-05-20 18:18:48,096 [INFO] ============================================================
+
+2026-05-20 18:18:48,096 [INFO] === Testing Health Endpoint ===
+2026-05-20 18:18:48,180 [INFO] ================================================================================
+2026-05-20 18:18:48,180 [INFO] REQUEST (INPUT TO API)
+2026-05-20 18:18:48,180 [INFO] ================================================================================
+2026-05-20 18:18:48,180 [INFO] GET http://localhost:8000/health
+2026-05-20 18:18:48,180 [INFO] ================================================================================
+
+2026-05-20 18:18:48,228 [INFO] HTTP Request: GET http://localhost:8000/health "HTTP/1.1 200 OK"
+2026-05-20 18:18:48,228 [INFO] ================================================================================
+2026-05-20 18:18:48,228 [INFO] RESPONSE (OUTPUT FROM API)
+2026-05-20 18:18:48,228 [INFO] ================================================================================
+2026-05-20 18:18:48,228 [INFO] Status: 200
+2026-05-20 18:18:48,228 [INFO] Response Body:
+2026-05-20 18:18:48,228 [INFO] {
+  "status": "ok",
+  "service": "waf-analyzer",
+  "ollama_health": "ollama_status: ok\nmodel: qwen2.5:1.5b\nmodel_available: True\navailable_models: qwen2.5:1.5b"
+}
+2026-05-20 18:18:48,228 [INFO] ================================================================================
+
+2026-05-20 18:18:48,228 [INFO] ✓ Health check passed
+
+2026-05-20 18:18:48,228 [INFO] === Testing Rule Docs Endpoint ===
+2026-05-20 18:18:48,235 [INFO] ================================================================================
+2026-05-20 18:18:48,235 [INFO] REQUEST (INPUT TO API)
+2026-05-20 18:18:48,235 [INFO] ================================================================================
+2026-05-20 18:18:48,235 [INFO] GET http://localhost:8000/rule-docs/AWSManagedRulesCommonRuleGroup
+2026-05-20 18:18:48,235 [INFO] ================================================================================
+
+2026-05-20 18:18:55,740 [INFO] HTTP Request: GET http://localhost:8000/rule-docs/AWSManagedRulesCommonRuleGroup "HTTP/1.1 200 OK"
+2026-05-20 18:18:55,747 [INFO] ================================================================================
+2026-05-20 18:18:55,748 [INFO] RESPONSE (OUTPUT FROM API)
+2026-05-20 18:18:55,748 [INFO] ================================================================================
+2026-05-20 18:18:55,748 [INFO] Status: 200
+2026-05-20 18:18:55,748 [INFO] Response Body:
+{
+  "rule_id": "AWSManagedRulesCommonRuleGroup",
+  "docs": "**Using rate-based rule statements in AWS WAF - AWS WAF, AWS Firewall Manager, AWS Shield Advanced, and AWS Shield network security director** (https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-rate-based.html)\nAWS WAF rate-based rules track, aggregate, limit requests; WC\u2026"
+}
+2026-05-20 18:18:55,748 [INFO] ================================================================================
+
+2026-05-20 18:18:55,748 [INFO] ✓ Rule docs test passed
+
+2026-05-20 18:18:55,749 [INFO] === Testing Batch RCA Processing (Complete Lifecycle) ===
+2026-05-20 18:18:55,749 [INFO] Submitting batch of 3 valid WAF logs...
+
+2026-05-20 18:18:55,749 [INFO] ================================================================================
+2026-05-20 18:18:55,749 [INFO] REQUEST PAYLOAD (INPUT TO API)
+2026-05-20 18:18:55,749 [INFO] ================================================================================
+2026-05-20 18:18:55,749 [INFO] POST http://localhost:8000/get-rca
+2026-05-20 18:18:55,749 [INFO] Content-Type: application/json
+2026-05-20 18:18:55,749 [INFO] 
+Request Body:
+2026-05-20 18:18:55,750 [INFO] {
+  "logs": [
+    {
+      "timestamp": 1576280412771,
+      "formatVersion": 1,
+      "webaclId": "arn:aws:wafv2:us-east-1:123456789012:global/webacl/test/a1b2c3d4",
+      "terminatingRuleId": "AWSManagedRulesCommonRuleGroup",
+      "terminatingRuleType": "MANAGED_RULE_GROUP",
+      "action": "BLOCK",
+      "terminatingRuleMatchDetails": [
+        {
+          "conditionType": "CROSS_SITE_SCRIPTING",
+          "sensitivityLevel": "HIGH",
+          "location": "BODY",
+          "matchedData": [
+            "<script>",
+            "alert"
+          ]
+        }
+      ],
+      "httpSourceName": "-",
+      "httpSourceId": "-",
+      "ruleGroupList": [],
+      "rateBasedRuleList": [],
+      "nonTerminatingMatchingRules": [],
+      "httpRequest": {
+        "clientIp": "192.0.2.1",
+        "country": "US",
+        "headers": [
+          {
+            "name": "Host",
+            "value": "example.com"
+          },
+          {
+            "name": "User-Agent",
+            "value": "curl/7.64.1"
+          },
+          {
+            "name": "Accept",
+            "value": "*/*"
+          }
+        ],
+        "uri": "/admin",
+        "args": "input=test",
+        "httpVersion": "HTTP/1.1",
+        "httpMethod": "POST",
+        "requestId": "test-request-1"
+      },
+      "labels": []
+    },
+    {
+      "timestamp": 1592361810888,
+      "formatVersion": 1,
+      "webaclId": "arn:aws:wafv2:us-east-1:123456789012:global/webacl/test/a1b2c3d4",
+      "terminatingRuleId": "AWSManagedRulesSQLiRuleGroup",
+      "terminatingRuleType": "MANAGED_RULE_GROUP",
+      "action": "BLOCK",
+      "terminatingRuleMatchDetails": [
+        {
+          "conditionType": "SQL_INJECTION",
+          "sensitivityLevel": "HIGH",
+          "location": "QUERY_STRING",
+          "matchedData": [
+            "1",
+            "OR",
+            "1=1"
+          ]
+        }
+      ],
+      "httpSourceName": "-",
+      "httpSourceId": "-",
+      "ruleGroupList": [],
+      "rateBasedRuleList": [],
+      "nonTerminatingMatchingRules": [],
+      "httpRequest": {
+        "clientIp": "192.0.2.2",
+        "country": "BR",
+        "headers": [
+          {
+            "name": "Host",
+            "value": "api.example.com"
+          },
+          {
+            "name": "User-Agent",
+            "value": "curl/7.64.1"
+          },
+          {
+            "name": "Accept",
+            "value": "*/*"
+          }
+        ],
+        "uri": "/api/users",
+        "args": "id=1",
+        "httpVersion": "HTTP/1.1",
+        "httpMethod": "GET",
+        "requestId": "test-request-2"
+      },
+      "labels": []
+    },
+    {
+      "timestamp": 1592361810889,
+      "formatVersion": 1,
+      "webaclId": "arn:aws:wafv2:us-east-1:123456789012:global/webacl/test/a1b2c3d4",
+      "terminatingRuleId": "AWSManagedRulesXSSRuleGroup",
+      "terminatingRuleType": "MANAGED_RULE_GROUP",
+      "action": "BLOCK",
+      "terminatingRuleMatchDetails": [
+        {
+          "conditionType": "CROSS_SITE_SCRIPTING",
+          "sensitivityLevel": "MEDIUM",
+          "location": "HEADER",
+          "matchedData": [
+            "<img",
+            "onerror"
+          ]
+        }
+      ],
+      "httpSourceName": "-",
+      "httpSourceId": "-",
+      "ruleGroupList": [],
+      "rateBasedRuleList": [],
+      "nonTerminatingMatchingRules": [],
+      "httpRequest": {
+        "clientIp": "10.0.0.1",
+        "country": "CN",
+        "headers": [
+          {
+            "name": "Host",
+            "value": "internal.example.com"
+          },
+          {
+            "name": "User-Agent",
+            "value": "Mozilla/5.0"
+          },
+          {
+            "name": "X-Forwarded-For",
+            "value": "10.0.0.1"
+          }
+        ],
+        "uri": "/search",
+        "args": "q=test",
+        "httpVersion": "HTTP/1.1",
+        "httpMethod": "GET",
+        "requestId": "test-request-3"
+      },
+      "labels": []
+    }
+  ],
+  "context": "Production incident - analyzing multiple blocked requests"
+}
+2026-05-20 18:18:55,750 [INFO] ================================================================================
+
+2026-05-20 18:18:55,762 [INFO] Sending batch request to /get-rca endpoint...
+2026-05-20 18:19:43,698 [INFO] HTTP Request: POST http://localhost:8000/get-rca "HTTP/1.1 200 OK"
+2026-05-20 18:19:43,699 [INFO] 
+Status: 200
+2026-05-20 18:19:43,700 [INFO] ================================================================================
+2026-05-20 18:19:43,700 [INFO] RESPONSE PAYLOAD (OUTPUT FROM API)
+2026-05-20 18:19:43,700 [INFO] ================================================================================
+2026-05-20 18:19:43,700 [INFO] HTTP Status: 200
+2026-05-20 18:19:43,700 [INFO] Content-Type: application/json
+2026-05-20 18:19:43,700 [INFO] 
+Response Body:
+2026-05-20 18:19:43,700 [INFO] {
+  "status": "success",
+  "total_logs": 3,
+  "successful": 3,
+  "failed": 0,
+  "analyses": [
+    {
+      "log_index": 0,
+      "rule_id": "AWSManagedRulesCommonRuleGroup",
+      "action": "BLOCK",
+      "analysis": "### RCA\n\nThe exact field or value in the request that triggered the rule is `input=test`. This parameter matches one of the specified attack classes within the AWS Managed Rules common rule group, specifically targeting cross-site scripting (XSS) attacks. The rule's definition and behavior are designed to detect any form of XSS by ensuring data entered into a webpage does not cause an injection point that could be exploited. Since `input=test` is directly input into the URL via a query string, it matches the criteria for this attack class.\n\n### Resolution\n\nTo resolve this issue, the developer should ensure parameter sanitization or encoding to prevent unauthorized inputs from being processed as part of the URL path in AWS WAF rule groups. Specifically:\n\n- Use `encodeURIComponent()` or similar functionality to escape any non-standard characters and ensure valid input.\n- Implement a whitelist approach where only predefined safe values are accepted for critical parameters like query strings.\n\nFor example:\n```javascript\nconst url = 'http://example.com/admin?' + encodeURIComponent('input=test');\n```\n\nBy sanitizing the value before it reaches AWS WAF, the rule will now correctly identify and block this request."
+    },
+    {
+      "log_index": 1,
+      "rule_id": "AWSManagedRulesSQLiRuleGroup",
+      "action": "BLOCK",
+      "analysis": "### RCA\n\nThe request triggered this rule because it contained a value in the query string `id=1`. This specific field is an unvalidated parameter, which matches the attack class of SQL injection (SQLi). The rule detected that this value could be used to inject malicious SQL queries into the application, potentially leading to unauthorized access or data modification. Since the request was being terminated by WAF, it indicates that the rule matched and prevented further execution.\n\n### Resolution\n\nTo resolve this issue, the developer should ensure proper parameter sanitization or validation for fields like `id` in subsequent requests to prevent injection attacks. This can be achieved through input filtering, URL encoding, or using safer libraries that automatically sanitize inputs.\n\nExample of a sanitized request:\n```bash\nGET /api/users?id=1 HTTP/1.1\nHost: api.example.com\n```\n\nIn this case, the `id` parameter has been encoded correctly to prevent SQL injection attacks by escaping any special characters within it."
+    },
+    {
+      "log_index": 2,
+      "rule_id": "AWSManagedRulesXSSRuleGroup",
+      "action": "BLOCK",
+      "analysis": "**RCA**\n\nThe exact field or value that triggered the rule was \"q=test\". This parameter in the query string matched one of the patterns defined within the AWS Managed Rules for AWS WAF rule group. The attack class detected by this rule is Cross-Site Scripting (XSS). The request URI \"/search\" indicates it is a search request, which often includes user input parameters like \"q=test\". Since the value being entered (\"test\") could be malicious JavaScript code that would execute on the client's browser, AWS WAF flagged the request as potentially containing an XSS attack. This matches one of the specific conditions defined in the rule group.\n\n**Resolution**\n\nTo resolve this false positive and ensure that only legitimate inputs are processed by your application, developers should implement input validation or sanitization for the \"q\" parameter. Specifically, they can:\n\n- Validate the value before storing it.\n- Ensure the string is not null or contains only valid characters (e.g., alphanumeric).\n- Use a function like `htmlentities()` to escape any potentially dangerous content.\n\nImplementing these changes will prevent malicious input from being processed by your application and allow WAF to correctly evaluate subsequent requests."
+    }
+  ],
+  "errors": []
+}
+2026-05-20 18:19:43,700 [INFO] ================================================================================
+
+2026-05-20 18:19:43,700 [INFO] 
+Batch Processing Summary:
+2026-05-20 18:19:43,700 [INFO]   - Status: success
+2026-05-20 18:19:43,700 [INFO]   - Total Logs Submitted: 3
+2026-05-20 18:19:43,700 [INFO]   - Successfully Analyzed: 3
+2026-05-20 18:19:43,700 [INFO]   - Failed: 0
+2026-05-20 18:19:43,700 [INFO] 
+=== Detailed RCA Results (3 logs analyzed) ===
+2026-05-20 18:19:43,700 [INFO] 
+Log #1:
+2026-05-20 18:19:43,701 [INFO]   Rule Triggered: AWSManagedRulesCommonRuleGroup
+2026-05-20 18:19:43,701 [INFO]   Action: BLOCK
+2026-05-20 18:19:43,701 [INFO]   Root Cause Analysis:
+2026-05-20 18:19:43,701 [INFO]     ### RCA
+2026-05-20 18:19:43,701 [INFO]     The exact field or value in the request that triggered the rule is `input=test`. This parameter matches one of the specified attack classes within the AWS Managed Rules common rule group, specifically targeting cross-site scripting (XSS) attacks. The rule's definition and behavior are designed to detect any form of XSS by ensuring data entered into a webpage does not cause an injection point that could be exploited. Since `input=test` is directly input into the URL via a query string, it matches the criteria for this attack class.
+2026-05-20 18:19:43,701 [INFO]     ### Resolution
+2026-05-20 18:19:43,701 [INFO]     ...
+2026-05-20 18:19:43,701 [INFO] 
+Log #2:
+2026-05-20 18:19:43,701 [INFO]   Rule Triggered: AWSManagedRulesSQLiRuleGroup
+2026-05-20 18:19:43,701 [INFO]   Action: BLOCK
+2026-05-20 18:19:43,701 [INFO]   Root Cause Analysis:
+2026-05-20 18:19:43,701 [INFO]     ### RCA
+2026-05-20 18:19:43,701 [INFO]     The request triggered this rule because it contained a value in the query string `id=1`. This specific field is an unvalidated parameter, which matches the attack class of SQL injection (SQLi). The rule detected that this value could be used to inject malicious SQL queries into the application, potentially leading to unauthorized access or data modification. Since the request was being terminated by WAF, it indicates that the rule matched and prevented further execution.
+2026-05-20 18:19:43,701 [INFO]     ### Resolution
+2026-05-20 18:19:43,701 [INFO]     ...
+2026-05-20 18:19:43,701 [INFO] 
+Log #3:
+2026-05-20 18:19:43,701 [INFO]   Rule Triggered: AWSManagedRulesXSSRuleGroup
+2026-05-20 18:19:43,701 [INFO]   Action: BLOCK
+2026-05-20 18:19:43,701 [INFO]   Root Cause Analysis:
+2026-05-20 18:19:43,701 [INFO]     **RCA**
+2026-05-20 18:19:43,701 [INFO]     The exact field or value that triggered the rule was "q=test". This parameter in the query string matched one of the patterns defined within the AWS Managed Rules for AWS WAF rule group. The attack class detected by this rule is Cross-Site Scripting (XSS). The request URI "/search" indicates it is a search request, which often includes user input parameters like "q=test". Since the value being entered ("test") could be malicious JavaScript code that would execute on the client's browser, AWS WAF flagged the request as potentially containing an XSS attack. This matches one of the specific conditions defined in the rule group.
+2026-05-20 18:19:43,701 [INFO]     **Resolution**
+2026-05-20 18:19:43,701 [INFO]     ...
+2026-05-20 18:19:43,701 [INFO] 
+2026-05-20 18:19:43,701 [INFO] ✓ Batch RCA test passed - 3/3 logs analyzed
+
+2026-05-20 18:19:43,702 [INFO] === Testing Error Handling ===
+2026-05-20 18:19:43,702 [INFO] Submitting invalid logs to test validation...
+
+2026-05-20 18:19:43,715 [INFO] HTTP Request: POST http://localhost:8000/get-rca "HTTP/1.1 400 Bad Request"
+2026-05-20 18:19:43,715 [INFO] Status: 400
+2026-05-20 18:19:43,715 [INFO] Response: {'detail': 'No valid logs found. Errors: ["Log 0: Missing required fields: [\'action\', \'terminatingRuleId\', \'terminatingRuleType\', \'httpRequest\']", \'Log 1: Invalid JSON - Expecting value: line 1 column 1 (char 0)\', "Log 2: Missing required fields: [\'terminatingRuleId\', \'terminatingRuleType\', \'httpRequest\']"]'}
+2026-05-20 18:19:43,715 [INFO] ✓ Invalid logs correctly rejected
+
+2026-05-20 18:19:43,715 [INFO] ============================================================
+2026-05-20 18:19:43,715 [INFO] Test Summary
+2026-05-20 18:19:43,715 [INFO] ============================================================
+2026-05-20 18:19:43,716 [INFO] health                         ✓ PASS
+2026-05-20 18:19:43,716 [INFO] rule_docs                      ✓ PASS
+2026-05-20 18:19:43,716 [INFO] batch_rca                      ✓ PASS
+2026-05-20 18:19:43,716 [INFO] error_handling                 ✓ PASS
+2026-05-20 18:19:43,716 [INFO] ============================================================
+2026-05-20 18:19:43,716 [INFO] Overall: 4/4 tests passed
+

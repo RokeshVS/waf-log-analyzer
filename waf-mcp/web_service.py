@@ -69,13 +69,13 @@ async def _import_tools():
     try:
         from app.mcp_server import (
             analyze_waf_log,
-            explain_block_reason,
             check_ollama_health,
+            lookup_waf_rule_docs,
         )
         return {
             "analyze_waf_log": analyze_waf_log,
-            "explain_block_reason": explain_block_reason,
             "check_ollama_health": check_ollama_health,
+            "lookup_waf_rule_docs": lookup_waf_rule_docs,
         }
     except ImportError as e:
         logger.error(f"Failed to import analysis tools: {e}")
@@ -226,6 +226,29 @@ async def get_rca(request: RCARequest) -> RCAResponse:
     return response
 
 
+@app.get("/rule-docs/{rule_id}")
+async def get_rule_docs(rule_id: str):
+    """
+    Fetch AWS documentation for a specific WAF rule ID.
+
+    Args:
+        rule_id: The WAF rule ID (e.g. 'CrossSiteScripting_BODY').
+
+    Returns:
+        Documentation excerpt for the rule.
+    """
+    logger.info(f"Rule docs request for rule_id={rule_id}")
+    try:
+        tools = await _import_tools()
+        docs = await tools["lookup_waf_rule_docs"](rule_id)
+        return {"rule_id": rule_id, "docs": docs}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Rule docs lookup failed for {rule_id}: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/")
 async def root():
     """Root endpoint with API info."""
@@ -236,6 +259,7 @@ async def root():
         "endpoints": {
             "health": "GET /health",
             "rca": "POST /get-rca",
+            "rule_docs": "GET /rule-docs/{rule_id}",
         },
         "docs": "/docs",
     }
