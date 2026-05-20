@@ -14,7 +14,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
-# Default to running the MCP server via stdio transport
-# Can be overridden with other commands (e.g., `python scripts/test_mcp.py`)
-ENTRYPOINT ["python"]
-CMD ["run_mcp_server.py"]
+# Run web service
+CMD ["python", "web_service.py"]

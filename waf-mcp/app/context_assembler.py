@@ -59,15 +59,15 @@ def _extract_rule_context(text: str, rule_id: str) -> str:
     return "\n".join(collected).strip()
 
 
-def _parse_available_sections(captured_errors: list[str]) -> list[str]:
-    """Extract quoted section names from 'Available sections: ...' error lines."""
-    for msg in captured_errors:
-        if "Available sections:" in msg:
-            after = msg.split("Available sections:", 1)[1]
-            sections = _SECTION_RE.findall(after)
-            if sections:
-                return sections
-    return []
+# def _parse_available_sections(captured_errors: list[str]) -> list[str]:
+#     """Extract quoted section names from 'Available sections: ...' error lines."""
+#     for msg in captured_errors:
+#         if "Available sections:" in msg:
+#             after = msg.split("Available sections:", 1)[1]
+#             sections = _SECTION_RE.findall(after)
+#             if sections:
+#                 return sections
+#     return []
 
 
 # ── Per-URL dynamic read ──────────────────────────────────────────────────────
@@ -243,6 +243,8 @@ async def build_analysis_context(raw_log: str | dict[str, Any]) -> dict[str, Any
 
     logger.debug("Building analysis context for rule '%s'.", rule_id)
     aws_docs_context = await lookup_rule_from_aws_docs(rule_id)
+    logger.debug("AWS docs context length for rule '%s': %d", rule_id, len(aws_docs_context))
+    logger.debug("Log summary for prompt:", parsed)
 
     return {
         "parsed": parsed,
