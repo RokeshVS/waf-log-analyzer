@@ -1,0 +1,7 @@
+https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups-list.html
+https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups-baseline.html
+https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups-use-case.html
+https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups-ip-rep.html
+https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups-acfp.html
+https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups-atp.html
+https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups-anti-ddos.html
