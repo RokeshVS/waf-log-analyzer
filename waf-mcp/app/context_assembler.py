@@ -77,7 +77,7 @@ async def _read_url_dynamically(
     rule_id: str,
     read_documentation_impl,
     session_uuid: str,
-    max_length: int = 5000,
+    max_length: int = 30000,
     start_index: int = 0,
 ) -> str:
     """Reads the entire document layout via MCP and extracts the rule context."""
