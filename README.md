@@ -27,7 +27,7 @@ waf-mcp/
 │   ├── log_parser.py
 │   └── mcp_server.py
 ├── scripts/
-│   └── test_mcp.py
+│   └── waf-mcp/smoke-test-scripts/test_rca_sanity.py
 ├── web_service.py          # FastAPI REST endpoints
 ├── Dockerfile
 ├── docker-compose.yml
@@ -77,10 +77,10 @@ See [docs/architecture.md](docs/architecture.md) for details.
 
 ```bash
 # Inside container
-docker-compose exec waf-analyzer python scripts/test_mcp.py
+docker-compose exec waf-analyzer python waf-mcp/smoke-test-scripts/test_rca_sanity.py
 
 # Local (if dev environment set up)
-python scripts/test_mcp.py
+python waf-mcp/smoke-test-scripts/test_rca_sanity.py
 ```
 
 ## Troubleshooting
